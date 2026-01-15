@@ -52,7 +52,7 @@ class DienDataset:
             tf.TensorSpec(shape=(), dtype=tf.int32), # cat
             tf.TensorSpec(shape=(self.padding_length,), dtype=tf.int32), # mid_history
             tf.TensorSpec(shape=(self.padding_length,), dtype=tf.int32),  # cat_history
-            tf.TensorSpec(shape=(), dtype=tf.int32),  # num_positives
+            tf.TensorSpec(shape=(self.padding_length,), dtype=tf.int32),  # positive_mask
             tf.TensorSpec(shape=(self.padding_length, self.negative_sample), dtype=tf.int32), # neg_mid_history
             tf.TensorSpec(shape=(self.padding_length, self.negative_sample), dtype=tf.int32)  # neg_cat_history
         )
@@ -104,7 +104,10 @@ class DienDataset:
                 item = self.padding_or_truncate(item)
             item = np.array(item)
             needed.append(item)
-        needed.append(num_positives)
+        # needed.append(num_positives)
+        positive_mask = [1] * num_positives
+        positive_mask = self.padding_or_truncate(positive_mask)
+        needed.append(np.array(positive_mask, dtype=np.int32))
         sampling_shape = (num_positives, self.negative_sample)
         negatives = self.negative_sampling(sampling_shape, np.array(positives), sampling_weight=self.negative_prop)
         negatives_cat = []
@@ -117,6 +120,7 @@ class DienDataset:
         negatives_cat = np.concatenate([negatives_cat, pad], axis=0)
 
         needed.extend([negatives, negatives_cat])
+        # ["label", "uid", "mid", "cat", "mid_history", "cat_history", "positive_mask", "negative_mid_history", "negative_cat_history"]
         return tuple(needed)
 
 class DienDatasetLoader:
