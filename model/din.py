@@ -1,3 +1,5 @@
+from typing import Union, List, Tuple, Callable, Optional
+
 import tensorflow as tf
 
 
@@ -7,23 +9,39 @@ class Din(tf.keras.Model):
             num_users: int,
             num_items: int,
             num_categories: int,
-            embedding_dim: int = 1024,
-            use_negative: bool = True
-
+            hidden_size: int = 1024,
+            use_negative: bool = True,
+            activation: Optional[Union[str, Callable]] = "relu"
     ):
         super().__init__()
         self.num_users = num_users
         self.num_items = num_items
         self.num_categories = num_categories
-        self.embedding_dim = embedding_dim
+        self.hidden_size = hidden_size
         self.use_negative = use_negative
 
-        self.user_embed = tf.keras.layers.Embedding(num_users, embedding_dim)
+        self.user_embed = tf.keras.layers.Embedding(num_users, hidden_size)
         tf.summary.histogram("user_embed", self.user_embed, step=0)
-        self.item_embed = tf.keras.layers.Embedding(num_items, embedding_dim)
+        self.item_embed = tf.keras.layers.Embedding(num_items, hidden_size)
         tf.summary.histogram("item_embed", self.item_embed, step=0)
-        self.category_embed = tf.keras.layers.Embedding(num_categories, embedding_dim)
+        self.category_embed = tf.keras.layers.Embedding(num_categories, hidden_size)
         tf.summary.histogram("category_embed", self.category_embed, step=0)
+
+        self.dense1 = tf.keras.layers.Dense(hidden_size, activation=activation)
+        self.dense2 = tf.keras.layers.Dense(hidden_size, activation=activation)
+        self.dense3 = tf.keras.layers.Dense(1,)
+
+    def din_attention(
+            self,
+            target_embedding: tf.Tensor,
+            item_seq_embedding: Union[tf.Tensor, Tuple[tf.Tensor], List[tf.Tensor]],
+            sequence_mask: tf.Tensor
+    ):
+        if not isinstance(item_seq_embedding, tf.Tensor):
+            n = len(item_seq_embedding)
+            item_seq_embedding = tf.concat(item_seq_embedding, axis=-1)
+            target_embedding = tf.tile(target_embedding, [1, n])
+
 
     def call(
             self,
