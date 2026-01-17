@@ -37,11 +37,24 @@ class Din(tf.keras.Model):
             item_seq_embedding: Union[tf.Tensor, Tuple[tf.Tensor], List[tf.Tensor]],
             sequence_mask: tf.Tensor
     ):
+        """
+        :param target_embedding: B, D
+        :param item_seq_embedding: B, L, D
+        :param sequence_mask: B, L
+        :return:
+        """
         if not isinstance(item_seq_embedding, tf.Tensor):
             n = len(item_seq_embedding)
             item_seq_embedding = tf.concat(item_seq_embedding, axis=-1)
             target_embedding = tf.tile(target_embedding, [1, n])
-
+        sequence_mask = tf.expand_dims(sequence_mask, axis=-1) # B, L, 1
+        target_embedding = tf.expand_dims(target_embedding, axis=1) # B, 1, D
+        target_embedding = tf.broadcast_to(target_embedding, item_seq_embedding.shape)
+        combined_embedding = tf.concat([
+            target_embedding, item_seq_embedding,
+            target_embedding - item_seq_embedding, target_embedding * item_seq_embedding
+        ], axis=-1)
+        logits = self.dense3(self.dense2(self.dense1(combined_embedding))) # B, L, 1
 
     def call(
             self,
