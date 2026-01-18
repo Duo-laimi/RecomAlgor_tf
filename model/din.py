@@ -11,7 +11,8 @@ class Din(tf.keras.Model):
             num_categories: int,
             hidden_size: int = 1024,
             use_negative: bool = True,
-            activation: Optional[Union[str, Callable]] = "relu"
+            activation: Optional[Union[str, Callable]] = "relu",
+            softmax_logits: bool = False
     ):
         super().__init__()
         self.num_users = num_users
@@ -31,6 +32,8 @@ class Din(tf.keras.Model):
         self.dense2 = tf.keras.layers.Dense(hidden_size, activation=activation)
         self.dense3 = tf.keras.layers.Dense(1,)
 
+        self.softmax_logits = softmax_logits
+
     def din_attention(
             self,
             target_embedding: tf.Tensor,
@@ -47,7 +50,7 @@ class Din(tf.keras.Model):
             n = len(item_seq_embedding)
             item_seq_embedding = tf.concat(item_seq_embedding, axis=-1)
             target_embedding = tf.tile(target_embedding, [1, n])
-        sequence_mask = tf.expand_dims(sequence_mask, axis=-1) # B, L, 1
+
         target_embedding = tf.expand_dims(target_embedding, axis=1) # B, 1, D
         target_embedding = tf.broadcast_to(target_embedding, item_seq_embedding.shape)
         combined_embedding = tf.concat([
@@ -55,6 +58,18 @@ class Din(tf.keras.Model):
             target_embedding - item_seq_embedding, target_embedding * item_seq_embedding
         ], axis=-1)
         logits = self.dense3(self.dense2(self.dense1(combined_embedding))) # B, L, 1
+        # logits = tf.squeeze(logits, axis=-1) # B, L
+        sequence_mask = tf.cast(sequence_mask, tf.bool)
+        sequence_mask = tf.expand_dims(sequence_mask, axis=-1)  # B, L, 1
+        # 掩码
+        if self.softmax_logits:
+            logits = tf.where(sequence_mask, logits, -1e9)
+            logits = tf.nn.softmax(logits, axis=1)
+        else:
+            logits = tf.where(sequence_mask, logits, 0)
+        output = logits * item_seq_embedding
+        output = tf.reduce_sum(output, axis=1)
+        return output
 
     def call(
             self,
