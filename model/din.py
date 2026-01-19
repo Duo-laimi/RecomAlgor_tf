@@ -27,12 +27,19 @@ class Din(tf.keras.Model):
         tf.summary.histogram("item_embed", self.item_embed, step=0)
         self.category_embed = tf.keras.layers.Embedding(num_categories, hidden_size)
         tf.summary.histogram("category_embed", self.category_embed, step=0)
-
-        self.dense1 = tf.keras.layers.Dense(hidden_size, activation=activation)
-        self.dense2 = tf.keras.layers.Dense(hidden_size, activation=activation)
-        self.dense3 = tf.keras.layers.Dense(1,)
-
         self.softmax_logits = softmax_logits
+
+        self.mlp1 = tf.keras.Sequential([
+            tf.keras.layers.Dense(hidden_size // 2, activation=activation),
+            tf.keras.layers.Dense(hidden_size // 4, activation=activation),
+            tf.keras.layers.Dense(1, )
+        ])
+
+        self.mlp2 = tf.keras.Sequential([
+            tf.keras.layers.Dense(hidden_size // 2, activation=activation),
+            tf.keras.layers.Dense(hidden_size // 4, activation=activation),
+            tf.keras.layers.Dense(1, )
+        ])
 
     def din_attention(
             self,
@@ -57,7 +64,7 @@ class Din(tf.keras.Model):
             target_embedding, item_seq_embedding,
             target_embedding - item_seq_embedding, target_embedding * item_seq_embedding
         ], axis=-1)
-        logits = self.dense3(self.dense2(self.dense1(combined_embedding))) # B, L, 1
+        logits = self.mlp1(combined_embedding) # B, L, 1
         # logits = tf.squeeze(logits, axis=-1) # B, L
         sequence_mask = tf.cast(sequence_mask, tf.bool)
         sequence_mask = tf.expand_dims(sequence_mask, axis=-1)  # B, L, 1
@@ -82,5 +89,20 @@ class Din(tf.keras.Model):
             negative_item_history: tf.Tensor,
             negative_category_history: tf.Tensor
     ):
-        # ["label", "uid", "mid", "cat", "mid_history", "cat_history", "positive_mask", "negative_mid_history", "negative_cat_history"]
-        pass
+        user_embed = self.user_embed(user_ids)
+        item_embed = self.item_embed(item_ids)
+        category_embed = self.category_embed(category_ids)
+
+        item_history_embed = self.item_embed(item_history)
+        category_history_embed = self.category_embed(category_history)
+
+        # negative_item_history_embed = self.item_embed(negative_item_history)
+        # negative_category_history_embed = self.category_embed(negative_category_history)
+
+        item_embed = item_embed + category_embed
+        item_history_embed = item_history_embed + category_history_embed
+
+        combined_item_embed = self.din_attention(item_embed, item_history_embed, sequence_mask)
+        combined_embed = tf.concat([user_embed, item_embed, combined_item_embed, item_embed * combined_item_embed], axis=-1)
+        logits = self.mlp2(combined_embed) # B, 1
+        return logits
