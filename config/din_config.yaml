@@ -1,0 +1,27 @@
+
+
+data_args:
+  meta: /mnt/d/aistudy/dataset/recommend/din_dien/item-info
+  codebooks: /mnt/d/aistudy/dataset/recommend/din_dien
+  data: /mnt/d/aistudy/dataset/recommend/din_dien/local_test_splitByUser
+
+training_args:
+  batch_size: 1024
+  optimizer: adam
+  optimizer_args:
+    learning_rate: 0.001
+
+
+model_args:
+  num_users: -1
+  num_items: -1
+  num_categories: -1
+  hidden_size: 1024
+  use_negative: False
+  activation: relu
+  softmax_logits: False
+
+
+
+
+
