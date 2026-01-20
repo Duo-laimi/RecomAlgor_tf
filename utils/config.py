@@ -2,6 +2,10 @@ from typing import Dict, Any
 
 from common import read_yaml
 
+import logging as log
+
+logger = log.getLogger(__name__)
+
 
 class Config:
     def __init__(self, config_path):
@@ -12,7 +16,7 @@ class Config:
         self.data_config = self.config["data_args"]
         self.print_config()
 
-    def print_config(self, print_func=print):
+    def print_config(self, print_func=logger.info):
         print_func("Data Args: ")
         for k, v in self.data_config.items():
             print_func(f"{k:>15}: {v}")
