@@ -35,6 +35,9 @@ class DienDataset:
 
         self.codebooks = codebooks
         self.codebooks_keys = ["uid_voc", "mid_voc", "cat_voc"]
+        self.num_users = len(codebooks["uid_voc"])
+        self.num_items = len(codebooks["mid_voc"])
+        self.num_categories = len(codebooks["cat_voc"])
 
         self.negative_prop = negative_prop
         self.negative_sample = negative_sample
