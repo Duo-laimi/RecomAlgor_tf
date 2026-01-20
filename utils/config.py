@@ -33,15 +33,6 @@ class Config:
         else:
             self.config.update(new_configs)
 
-    def init_metadata(self, num_users, num_items, num_categories):
-        meta = {
-            "num_users": num_users,
-            "num_items": num_items,
-            "num_categories": num_categories
-        }
-        self.update_config(meta, "data_args")
-
-
 if __name__ == "__main__":
     path = "../config/din_config.yaml"
     config = Config(path)
