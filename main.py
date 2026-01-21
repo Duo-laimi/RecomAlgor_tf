@@ -44,7 +44,7 @@ def main(args):
         train_dataset_tf,
         epochs=training_args["num_epochs"],
         validation_data=eval_dataset_tf,
-        callback=[tf_callback]
+        callbacks=[tf_callback]
     )
 
 
