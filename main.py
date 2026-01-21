@@ -32,6 +32,7 @@ def main(args):
         "num_categories": dataset.num_categories
     }
     config.update_config(model_args, "model_config")
+    print(config.model_config)
 
     model = Din(**config.model_config)
     optimizer_args = training_args["optimizer_args"]
