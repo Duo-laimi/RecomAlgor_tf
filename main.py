@@ -26,6 +26,12 @@ def main(args):
         _data_loader.eval_call,
         output_signature=_data_loader.get_output_signature()
     ).batch(eval_batch_size).prefetch(5)
+    model_args = {
+        "num_users": dataset.num_users,
+        "num_items": dataset.num_items,
+        "num_categories": dataset.num_categories
+    }
+    config.update_config(model_args, "model_config")
 
     model = Din(**config.model_config)
     optimizer_args = training_args["optimizer_args"]
