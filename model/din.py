@@ -56,7 +56,7 @@ class Din(tf.keras.Model):
             target_embedding = tf.tile(target_embedding, [1, n])
 
         target_embedding = tf.expand_dims(target_embedding, axis=1) # B, 1, D
-        target_embedding = tf.broadcast_to(target_embedding, item_seq_embedding.shape)
+        # target_embedding = tf.broadcast_to(target_embedding, item_seq_embedding.shape())
         combined_embedding = tf.concat([
             target_embedding, item_seq_embedding,
             target_embedding - item_seq_embedding, target_embedding * item_seq_embedding
