@@ -31,7 +31,7 @@ def main(args):
         "num_items": dataset.num_items,
         "num_categories": dataset.num_categories
     }
-    config.update_config(model_args, "model_config")
+    config.model_config.update(model_args)
     print(config.model_config)
 
     model = Din(**config.model_config)
