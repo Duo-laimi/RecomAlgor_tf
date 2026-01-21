@@ -22,11 +22,8 @@ class Din(tf.keras.Model):
         self.use_negative = use_negative
 
         self.user_embed = tf.keras.layers.Embedding(num_users, hidden_size)
-        tf.summary.histogram("user_embed", self.user_embed.embeddings, step=0)
         self.item_embed = tf.keras.layers.Embedding(num_items, hidden_size)
-        tf.summary.histogram("item_embed", self.item_embed.embeddings, step=0)
         self.category_embed = tf.keras.layers.Embedding(num_categories, hidden_size)
-        tf.summary.histogram("category_embed", self.category_embed.embeddings, step=0)
         self.softmax_logits = softmax_logits
 
         self.mlp1 = tf.keras.Sequential([

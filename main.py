@@ -39,7 +39,7 @@ def main(args):
             AUC(name="auc")
         ]
     )
-    tf_callback = tf.keras.callbacks.TensorBoard(log_dir="logs/din")
+    tf_callback = tf.keras.callbacks.TensorBoard(log_dir="logs/din", histogram_freq=1)
     model.fit(
         train_dataset_tf,
         epochs=training_args["num_epochs"],
