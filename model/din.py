@@ -77,15 +77,11 @@ class Din(tf.keras.Model):
 
     def call(
             self,
-            user_ids: tf.Tensor,
-            item_ids: tf.Tensor,
-            category_ids: tf.Tensor,
-            item_history: tf.Tensor,
-            category_history: tf.Tensor,
-            sequence_mask: tf.Tensor,
-            negative_item_history: tf.Tensor,
-            negative_category_history: tf.Tensor
+            inputs
     ):
+        user_ids, item_ids, category_ids, \
+            item_history, category_history, \
+            sequence_mask, negative_item_history, negative_category_history = inputs
         user_embed = self.user_embed(user_ids)
         item_embed = self.item_embed(item_ids)
         category_embed = self.category_embed(category_ids)

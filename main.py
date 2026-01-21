@@ -20,11 +20,11 @@ def main(args):
     _data_loader = DienDatasetLoader(dataset, 0.1, True)
     train_dataset_tf = tf.data.Dataset.from_generator(
         _data_loader.train_call,
-        output_signature=dataset.get_output_signature()
+        output_signature=_data_loader.get_output_signature()
     ).batch(train_batch_size).prefetch(5)
     eval_dataset_tf = tf.data.Dataset.from_generator(
         _data_loader.eval_call,
-        output_signature=dataset.get_output_signature()
+        output_signature=_data_loader.get_output_signature()
     ).batch(eval_batch_size).prefetch(5)
 
     model = Din(**config.model_config)

@@ -139,6 +139,10 @@ class DienDatasetLoader:
         if self.shuffle:
             self.random_idx = np.random.permutation(self.num_samples).tolist()
 
+    def get_output_signature(self):
+        output_signature = self.dataset.get_output_signature()
+        return output_signature[1:], output_signature[0]
+
     def train_call(self):
         for i in range(self.train_eval_split):
             idx = self.random_idx[i]
