@@ -64,8 +64,10 @@ def load_amazon_book_df(path: str, codebooks: Dict[str, Dict[str, int]]):
     return df
 
 
-def load_amazon_book(path: str, codebooks, meta):
-    df = load_amazon_book_df(path, codebooks)
+def load_amazon_book(source_path: str, codebooks_path: str, meta_path: str):
+    codebooks = read_codebooks(codebooks_path)
+    meta = read_meta(meta_path, codebooks)
+    df = load_amazon_book_df(source_path, codebooks)
     ds = DienDataset(
         source = df,
         meta_mapping = meta,
