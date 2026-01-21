@@ -1,16 +1,54 @@
-# 这是一个示例 Python 脚本。
+from parse_args import parse_args
+from utils.config import Config
+from utils.common import setup_logging
+from dataset.amazon_book import load_amazon_book as load_dataset
+from dataset.base import DienDatasetLoader
+from  model.din import Din
 
-# 按 Shift+F10 执行或将其替换为您的代码。
-# 按 双击 Shift 在所有地方搜索类、文件、工具窗口、操作和设置。
+import tensorflow as tf
+from tensorflow.keras.losses import binary_crossentropy
+from tensorflow.keras.metrics import binary_accuracy, AUC, Recall, Precision
 
 
-def print_hi(name):
-    # 在下面的代码行中使用断点来调试脚本。
-    print(f'Hi, {name}')  # 按 Ctrl+F8 切换断点。
+def main(args):
+    setup_logging(args.log_config)
+    config = Config(args.config)
+    dataset = load_dataset(**config.data_config)
+    training_args = config.training_config
+    train_batch_size = training_args["train_batch_size"]
+    eval_batch_size = training_args["eval_batch_size"]
+    _data_loader = DienDatasetLoader(dataset, 0.1, True)
+    train_dataset_tf = tf.data.Dataset.from_generator(
+        _data_loader.train_call,
+        output_signature=dataset.get_output_signature()
+    ).batch(train_batch_size).prefetch(5)
+    eval_dataset_tf = tf.data.Dataset.from_generator(
+        _data_loader.eval_call,
+        output_signature=dataset.get_output_signature()
+    ).batch(eval_batch_size).prefetch(5)
+
+    model = Din(**config.model_config)
+    optimizer_args = training_args["optimizer_args"]
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(**optimizer_args),
+        loss=binary_crossentropy,
+        metrics=[
+            binary_accuracy,
+            Precision(name="precision"),
+            Recall(name="recall"),
+            AUC(name="auc")
+        ]
+    )
+    tf_callback = tf.keras.callbacks.TensorBoard(log_dir="logs/din")
+    model.fit(
+        train_dataset_tf,
+        epochs=training_args["num_epochs"],
+        validation_data=eval_dataset_tf,
+        callback=[tf_callback]
+    )
 
 
-# 按装订区域中的绿色按钮以运行脚本。
-if __name__ == '__main__':
-    print_hi('PyCharm')
 
-# 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
+if __name__ == "__main__":
+    argv = parse_args()
+    main(argv)

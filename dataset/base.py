@@ -127,33 +127,27 @@ class DienDataset:
         return tuple(needed)
 
 class DienDatasetLoader:
-    def __init__(self, dataset: DienDataset, batch_size: int, shuffle: bool = True):
+    def __init__(self, dataset: DienDataset, eval_ratio: float=0.1, shuffle: bool = True):
         self.dataset = dataset
-        self.batch_size = batch_size
         self.shuffle = shuffle
-        self.next = 0
         self.num_samples = len(dataset)
+        self.train_eval_split = int(self.num_samples * (1 - eval_ratio))
         self.random_idx = list(range(self.num_samples))
+        self.reset()
 
     def reset(self):
-        self.next = 0
         if self.shuffle:
             self.random_idx = np.random.permutation(self.num_samples).tolist()
 
+    def train_call(self):
+        for i in range(self.train_eval_split):
+            idx = self.random_idx[i]
+            yield self.dataset[idx][1:], self.dataset[idx][0]
 
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.next == self.num_samples:
-            self.next = 0
-            raise StopIteration
-        idx = self.random_idx[self.next]
-        self.next += 1
-        return self.dataset[idx]
-
-    def __call__(self):
-        return self.__next__
+    def eval_call(self):
+        for i in range(self.train_eval_split, self.num_samples):
+            idx = self.random_idx[i]
+            yield self.dataset[idx][1:], self.dataset[idx][0]
 
 
 

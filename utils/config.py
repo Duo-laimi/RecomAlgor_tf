@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from common import read_yaml
+from .common import read_yaml
 
 import logging as log
 
