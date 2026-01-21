@@ -1,0 +1,35 @@
+
+
+data_args:
+  meta: /root/lanyun-tmp/dataset/amazon_book/item-info
+  codebooks: /root/lanyun-tmp/dataset/amazon_book/
+  data: /root/lanyun-tmp/dataset/amazon_book/local_test_splitByUser
+
+training_args:
+  seed: 42
+  world_size: 1
+  num_workers: 4
+  num_epochs: 5
+  train_batch_size: 256
+  eval_batch_size: 1024
+  warmup_ratio: 0.1
+  eval_ratio: 0.1
+  pin_memory: False
+  optimizer: adam
+  optimizer_args:
+    learning_rate: 0.001
+
+
+model_args:
+  num_users: -1
+  num_items: -1
+  num_categories: -1
+  hidden_size: 1024
+  use_negative: False
+  activation: relu
+  softmax_logits: False
+
+
+
+
+
