@@ -29,7 +29,8 @@ class Config:
 
     def update_config(self, new_configs: Dict[str, Any], item_name=None):
         if item_name in self.config:
-            self.config[item_name].update(new_configs)
+            self.model_config.update(new_configs) # debug
+            # self.config[item_name].update(new_configs)
         else:
             self.config.update(new_configs)
 
