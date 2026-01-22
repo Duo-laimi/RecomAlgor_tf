@@ -63,7 +63,7 @@ class DienDataset:
     def padding_or_truncate(self, inputs: List[Any]):
         extra = self.padding_length - len(inputs)
         inputs = inputs + [self.pad_token] * extra
-        return inputs[:self.padding_length]
+        return inputs[-self.padding_length:]
 
     def negative_sampling(
             self,
@@ -99,7 +99,7 @@ class DienDataset:
         row = self.source.iloc[idx]
         needed = []
         positives = row["mid_history"]
-        num_positives = len(positives)
+        num_positives = min(len(positives), self.padding_length)
 
         for key in self.keys:
             item = row[key]
