@@ -1,4 +1,5 @@
-
+save_path: /mnt/d/aistudy/dataset/recommend/din_dien/din/inference
+ckpt_path: /mnt/d/aistudy/dataset/recommend/din_dien/din/checkpoints
 
 data_args:
   meta: /mnt/d/aistudy/dataset/recommend/din_dien/item-info

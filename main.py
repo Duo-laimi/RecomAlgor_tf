@@ -46,13 +46,17 @@ def main(args):
             AUC(name="auc")
         ]
     )
-    tf_callback = tf.keras.callbacks.TensorBoard(log_dir="logs/din", histogram_freq=1)
+    save_path = config.config["save_path"]
+    ckpt_path = config.config["ckpt_path"]
+    tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir="logs/din", histogram_freq=1)
+    checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(ckpt_path, save_best_only=True, save_weights_only=True)
     model.fit(
         train_dataset_tf,
         epochs=training_args["num_epochs"],
         validation_data=eval_dataset_tf,
-        callbacks=[tf_callback]
+        callbacks=[tensorboard_cb, checkpoint_cb]
     )
+    model.save(save_path)
 
 
 
