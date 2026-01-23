@@ -55,7 +55,7 @@ def main(args):
     if os.path.exists(ckpt_path):
         model.load_weights(ckpt_path)
         logger.info(f"Training based on existing weights: {ckpt_path}.")
-    tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir="logs/din", histogram_freq=1)
+    tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir="logs/din", histogram_freq=1, update_freq=10)
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(ckpt_path, save_best_only=True)
     model.fit(
         train_dataset_tf,
