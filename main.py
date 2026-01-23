@@ -1,3 +1,6 @@
+import os.path
+import logging as log
+
 from parse_args import parse_args
 from utils.config import Config
 from utils.common import setup_logging
@@ -9,6 +12,7 @@ import tensorflow as tf
 from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.keras.metrics import binary_accuracy, AUC, Recall, Precision
 
+logger = log.getLogger(__name__)
 
 def main(args):
     setup_logging(args.log_config)
@@ -48,6 +52,9 @@ def main(args):
     )
     save_path = config.config["save_path"]
     ckpt_path = config.config["ckpt_path"]
+    if os.path.exists(ckpt_path):
+        model.load_weights(ckpt_path)
+        logger.info(f"Training based on existing weights: {ckpt_path}.")
     tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir="logs/din", histogram_freq=1)
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(ckpt_path, save_best_only=True)
     model.fit(
