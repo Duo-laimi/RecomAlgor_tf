@@ -11,8 +11,8 @@ training_args:
   world_size: 1
   num_workers: 4
   num_epochs: 5
-  train_batch_size: 256
-  eval_batch_size: 1024
+  train_batch_size: 32
+  eval_batch_size: 128
   warmup_ratio: 0.1
   eval_ratio: 0.1
   pin_memory: False
