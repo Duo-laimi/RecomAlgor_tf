@@ -54,7 +54,8 @@ def main(args):
         train_dataset_tf,
         epochs=training_args["num_epochs"],
         validation_data=eval_dataset_tf,
-        callbacks=[tensorboard_cb, checkpoint_cb]
+        callbacks=[tensorboard_cb, checkpoint_cb],
+        worker=config.training_config["num_workers"]
     )
     model.save(save_path)
 
