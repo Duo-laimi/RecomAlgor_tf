@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.saving import register_keras_serializable
 
 
-@register_keras_serializable("din")
+@register_keras_serializable()
 class Din(tf.keras.Model):
     def __init__(
             self,
