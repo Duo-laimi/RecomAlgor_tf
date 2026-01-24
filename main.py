@@ -53,6 +53,7 @@ def main(args):
     save_path = config.config["save_path"]
     ckpt_path = config.config["ckpt_path"]
     if os.path.exists(ckpt_path):
+        model.build(input_shape=(None, model.hidden_size))
         model.load_weights(ckpt_path)
         logger.info(f"Training based on existing weights: {ckpt_path}.")
     tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir="logs/din", histogram_freq=1, update_freq=10)
