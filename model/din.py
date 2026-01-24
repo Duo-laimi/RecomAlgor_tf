@@ -1,8 +1,10 @@
 from typing import Union, List, Tuple, Callable, Optional
 
 import tensorflow as tf
+from tensorflow.keras.saving import register_keras_serializable
 
 
+@register_keras_serializable("din")
 class Din(tf.keras.Model):
     def __init__(
             self,
