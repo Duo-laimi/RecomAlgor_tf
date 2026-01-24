@@ -29,7 +29,7 @@ def main(args):
     eval_dataset_tf = tf.data.Dataset.from_generator(
         _data_loader.eval_call,
         output_signature=_data_loader.get_output_signature()
-    ).shuffle(buffer_size=1024).batch(eval_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
+    ).batch(eval_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
     model_args = {
         "num_users": dataset.num_users,
         "num_items": dataset.num_items,
