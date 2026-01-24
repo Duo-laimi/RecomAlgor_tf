@@ -46,7 +46,7 @@ def main(args):
     if os.path.exists(ckpt_path):
         model.build(input_shape=(None, model.hidden_size))
         # model.load_weights(ckpt_path)
-        model = tf.keras.models.load_model(ckpt_path)
+        model = tf.keras.models.load_model(ckpt_path, custom_objects={"Din": Din})
         logger.info(f"Training based on existing weights: {ckpt_path}.")
     else:
         model.compile(
