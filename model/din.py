@@ -11,6 +11,7 @@ class Din(tf.keras.Model):
             num_users: int,
             num_items: int,
             num_categories: int,
+            embedding_dim: int = 256,
             hidden_size: int = 1024,
             use_negative: bool = True,
             activation: Optional[Union[str, Callable]] = "relu",
@@ -21,22 +22,23 @@ class Din(tf.keras.Model):
         self.num_items = num_items
         self.num_categories = num_categories
         self.hidden_size = hidden_size
+        self.embedding_dim = embedding_dim
         self.use_negative = use_negative
 
-        self.user_embed = tf.keras.layers.Embedding(num_users, hidden_size)
-        self.item_embed = tf.keras.layers.Embedding(num_items, hidden_size)
-        self.category_embed = tf.keras.layers.Embedding(num_categories, hidden_size)
+        self.user_embed = tf.keras.layers.Embedding(num_users, embedding_dim)
+        self.item_embed = tf.keras.layers.Embedding(num_items, embedding_dim)
+        self.category_embed = tf.keras.layers.Embedding(num_categories, embedding_dim)
         self.softmax_logits = softmax_logits
 
         self.mlp1 = tf.keras.Sequential([
+            tf.keras.layers.Dense(hidden_size, activation=activation),
             tf.keras.layers.Dense(hidden_size // 2, activation=activation),
-            tf.keras.layers.Dense(hidden_size // 4, activation=activation),
             tf.keras.layers.Dense(1, )
         ])
 
         self.mlp2 = tf.keras.Sequential([
+            tf.keras.layers.Dense(hidden_size, activation=activation),
             tf.keras.layers.Dense(hidden_size // 2, activation=activation),
-            tf.keras.layers.Dense(hidden_size // 4, activation=activation),
             tf.keras.layers.Dense(1, )
         ])
 
@@ -100,6 +102,7 @@ class Din(tf.keras.Model):
         item_history_embed = item_history_embed + category_history_embed
 
         combined_item_embed = self.din_attention(item_embed, item_history_embed, sequence_mask)
+        combined_item_embed = tf.nn.dropout(combined_item_embed, rate=0.2)
         combined_embed = tf.concat([user_embed, item_embed, combined_item_embed, item_embed * combined_item_embed], axis=-1)
         logits = self.mlp2(combined_embed) # B, 1
         return logits
