@@ -15,10 +15,8 @@ class Din(tf.keras.Model):
             use_negative: bool = True,
             activation: Optional[Union[str, Callable]] = "relu",
             softmax_logits: bool = False,
-            *args,
-            **kwargs
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self.num_users = num_users
         self.num_items = num_items
         self.num_categories = num_categories
