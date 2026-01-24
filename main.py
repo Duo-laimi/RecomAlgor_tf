@@ -25,11 +25,11 @@ def main(args):
     train_dataset_tf = tf.data.Dataset.from_generator(
         _data_loader.train_call,
         output_signature=_data_loader.get_output_signature()
-    ).batch(train_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
+    ).shuffle(buffer_size=1024).batch(train_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
     eval_dataset_tf = tf.data.Dataset.from_generator(
         _data_loader.eval_call,
         output_signature=_data_loader.get_output_signature()
-    ).batch(eval_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
+    ).shuffle(buffer_size=1024).batch(eval_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
     model_args = {
         "num_users": dataset.num_users,
         "num_items": dataset.num_items,
