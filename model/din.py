@@ -44,6 +44,7 @@ class Din(tf.keras.Model):
         ])
 
         self.mlp2 = tf.keras.Sequential([
+            tf.keras.layers.BatchNormalization(),
             tf.keras.layers.Dense(hidden_size),
             ACT_CLASS(),
             tf.keras.layers.Dense(hidden_size // 2),
