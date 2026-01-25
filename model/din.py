@@ -1,7 +1,9 @@
-from typing import Union, List, Tuple, Callable, Optional
+from typing import Union, List, Tuple, Optional
 
 import tensorflow as tf
 from tensorflow.keras.saving import register_keras_serializable
+
+from activations import ACT_FUNC
 
 
 @register_keras_serializable()
@@ -14,31 +16,38 @@ class Din(tf.keras.Model):
             embedding_dim: int = 256,
             hidden_size: int = 1024,
             use_negative: bool = True,
-            activation: Optional[Union[str, Callable]] = "relu",
+            activation: Optional[str] = "relu",
             softmax_logits: bool = False,
+            **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
         self.num_users = num_users
         self.num_items = num_items
         self.num_categories = num_categories
         self.hidden_size = hidden_size
         self.embedding_dim = embedding_dim
         self.use_negative = use_negative
-
+        self.activation = activation
         self.user_embed = tf.keras.layers.Embedding(num_users, embedding_dim)
         self.item_embed = tf.keras.layers.Embedding(num_items, embedding_dim)
         self.category_embed = tf.keras.layers.Embedding(num_categories, embedding_dim)
         self.softmax_logits = softmax_logits
 
+        ACT_CLASS = ACT_FUNC[activation]
+
         self.mlp1 = tf.keras.Sequential([
-            tf.keras.layers.Dense(hidden_size, activation=activation),
-            tf.keras.layers.Dense(hidden_size // 2, activation=activation),
+            tf.keras.layers.Dense(hidden_size),
+            ACT_CLASS(),
+            tf.keras.layers.Dense(hidden_size // 2),
+            ACT_CLASS(),
             tf.keras.layers.Dense(1, )
         ])
 
         self.mlp2 = tf.keras.Sequential([
-            tf.keras.layers.Dense(hidden_size, activation=activation),
-            tf.keras.layers.Dense(hidden_size // 2, activation=activation),
+            tf.keras.layers.Dense(hidden_size),
+            ACT_CLASS(),
+            tf.keras.layers.Dense(hidden_size // 2),
+            ACT_CLASS(),
             tf.keras.layers.Dense(1, )
         ])
 
@@ -106,3 +115,18 @@ class Din(tf.keras.Model):
         combined_embed = tf.concat([user_embed, item_embed, combined_item_embed, item_embed * combined_item_embed], axis=-1)
         logits = self.mlp2(combined_embed) # B, 1
         return logits
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            "num_users" : self.num_users,
+            "num_items" : self.num_items,
+            "num_categories" : self.num_categories,
+            "embedding_dim" : self.embedding_dim,
+            "hidden_size" : self.hidden_size,
+            "use_negative" : self.use_negative,
+            "activation" : self.activation,
+            "softmax_logits" : self.softmax_logits,
+
+        })
+        return config
