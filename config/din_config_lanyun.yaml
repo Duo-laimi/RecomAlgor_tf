@@ -29,7 +29,7 @@ model_args:
   embedding_dim: 16
   hidden_size: 64
   use_negative: False
-  activation: prelu
+  activation: dice
   softmax_logits: False
 
 
