@@ -3,7 +3,7 @@ from typing import Union, List, Tuple, Optional
 import tensorflow as tf
 from tensorflow.keras.saving import register_keras_serializable
 
-from activations import ACT_FUNC
+from .activations import ACT_FUNC
 
 
 @register_keras_serializable()
