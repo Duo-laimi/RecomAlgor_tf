@@ -44,7 +44,7 @@ def main(args):
     save_path = config.config["save_path"]
     ckpt_path = config.config["ckpt_path"]
     # if os.path.exists(ckpt_path):
-    #     model.build(input_shape=(None, model.hidden_size))
+    #     model.build(input_shape=(None, model.embedding_dim))
     #     # model.load_weights(ckpt_path)
     #     model = tf.keras.models.load_model(ckpt_path)
     #     logger.info(f"Training based on existing weights: {ckpt_path}.")
