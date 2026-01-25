@@ -1,6 +1,8 @@
 import tensorflow as tf
+from tensorflow.keras.saving import register_keras_serializable
 from tensorflow.keras import layers
 
+@register_keras_serializable()
 class Dice(layers.Layer):
     def __init__(self, axis=-1, epsilon=1e-9, **kwargs):
         super(Dice, self).__init__(**kwargs)
