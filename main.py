@@ -68,7 +68,8 @@ def main(args):
         validation_data=eval_dataset_tf,
         callbacks=[tensorboard_cb, checkpoint_cb]
     )
-    model.save(save_path)
+    # model.save(save_path)
+    model.export(save_path)
 
 
 
