@@ -41,9 +41,10 @@ def main(args):
     model = Din(**config.model_config)
     optimizer_args = training_args["optimizer_args"]
 
-    save_path = config.config["save_path"]
-    ckpt_path = config.config["ckpt_path"]
-    if os.path.exists(ckpt_path):
+    save_path = config.training_config["save_path"]
+    ckpt_path = config.training_config["ckpt_path"]
+    from_scratch = config.training_config["from_scratch"]
+    if os.path.exists(ckpt_path) and not from_scratch:
         # model.build(input_shape=(None, model.embedding_dim))
         # model.load_weights(ckpt_path)
         model = tf.keras.models.load_model(ckpt_path)
