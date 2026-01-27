@@ -11,8 +11,16 @@ from  model.din import Din
 import tensorflow as tf
 from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.keras.metrics import binary_accuracy, AUC, Recall, Precision
+import random
+import numpy as np
 
 logger = log.getLogger(__name__)
+
+def set_all_seeds(seed=42):
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+    tf.random.set_seed(seed)
 
 def main(args):
     setup_logging(args.log_config)
