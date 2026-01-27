@@ -27,6 +27,7 @@ def main(args):
     config = Config(args.config)
     dataset = load_dataset(**config.data_config)
     training_args = config.training_config
+    set_all_seeds(training_args["seed"])
     train_batch_size = training_args["train_batch_size"]
     eval_batch_size = training_args["eval_batch_size"]
     _data_loader = DienDatasetLoader(dataset, 0.1, True)
