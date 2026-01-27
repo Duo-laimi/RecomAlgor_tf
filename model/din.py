@@ -87,7 +87,7 @@ class Din(tf.keras.Model):
             logits = tf.nn.softmax(logits, axis=1)
         else:
             logits = tf.where(sequence_mask, logits, 0)
-        logits = tf.nn.dropout(logits, rate=0.2)
+        logits = tf.nn.dropout(logits, rate=0.5)
         output = logits * item_seq_embedding
         output = tf.reduce_sum(output, axis=1)
         return output
@@ -113,7 +113,7 @@ class Din(tf.keras.Model):
         item_history_embed = item_history_embed + category_history_embed
 
         combined_item_embed = self.din_attention(item_embed, item_history_embed, sequence_mask)
-        combined_item_embed = tf.nn.dropout(combined_item_embed, rate=0.2)
+        # combined_item_embed = tf.nn.dropout(combined_item_embed, rate=0.2)
         combined_embed = tf.concat([user_embed, item_embed, combined_item_embed, item_embed * combined_item_embed], axis=-1)
         logits = self.mlp2(combined_embed) # B, 1
         return logits
