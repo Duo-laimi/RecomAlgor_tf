@@ -32,7 +32,7 @@ def main(args):
     train_batch_size = training_args["train_batch_size"]
     eval_batch_size = training_args["eval_batch_size"]
     _train_loader = DienDatasetLoader(train_dataset, True)
-    _eval_loader = DienDatasetLoader(eval_loader, True)
+    _eval_loader = DienDatasetLoader(eval_dataset, True)
     train_dataset_tf = tf.data.Dataset.from_generator(
         _train_loader,
         output_signature=_train_loader.get_output_signature()
@@ -42,9 +42,9 @@ def main(args):
         output_signature=_eval_loader.get_output_signature()
     ).batch(eval_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
     model_args = {
-        "num_users": dataset.num_users,
-        "num_items": dataset.num_items,
-        "num_categories": dataset.num_categories
+        "num_users": train_dataset.num_users,
+        "num_items": train_dataset.num_items,
+        "num_categories": train_dataset.num_categories
     }
     config.model_config.update(model_args)
     print(config.model_config)
