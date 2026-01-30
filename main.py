@@ -25,19 +25,21 @@ def set_all_seeds(seed=42):
 def main(args):
     setup_logging(args.log_config)
     config = Config(args.config)
-    dataset = load_dataset(**config.data_config)
+    train_dataset = load_dataset(**config.data_config["train"])
+    eval_dataset = load_dataset(**config.data_config["eval"])
     training_args = config.training_config
     set_all_seeds(training_args["seed"])
     train_batch_size = training_args["train_batch_size"]
     eval_batch_size = training_args["eval_batch_size"]
-    _data_loader = DienDatasetLoader(dataset, 0.1, True)
+    _train_loader = DienDatasetLoader(train_dataset, True)
+    _eval_loader = DienDatasetLoader(eval_loader, True)
     train_dataset_tf = tf.data.Dataset.from_generator(
-        _data_loader.train_call,
-        output_signature=_data_loader.get_output_signature()
+        _train_loader,
+        output_signature=_train_loader.get_output_signature()
     ).shuffle(buffer_size=1024).batch(train_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
     eval_dataset_tf = tf.data.Dataset.from_generator(
-        _data_loader.eval_call,
-        output_signature=_data_loader.get_output_signature()
+        _eval_loader,
+        output_signature=_eval_loader.get_output_signature()
     ).batch(eval_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
     model_args = {
         "num_users": dataset.num_users,

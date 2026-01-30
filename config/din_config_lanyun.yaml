@@ -1,6 +1,11 @@
 
 
 data_args:
+ train:
+  meta: /root/lanyun-tmp/dataset/amazon_book/item-info
+  codebooks: /root/lanyun-tmp/dataset/amazon_book/
+  data: /root/lanyun-tmp/dataset/amazon_book/local_train_splitByUser
+ eval:
   meta: /root/lanyun-tmp/dataset/amazon_book/item-info
   codebooks: /root/lanyun-tmp/dataset/amazon_book/
   data: /root/lanyun-tmp/dataset/amazon_book/local_test_splitByUser
@@ -28,8 +33,8 @@ model_args:
   num_users: -1
   num_items: -1
   num_categories: -1
-  embedding_dim: 16
-  hidden_size: 64
+  embedding_dim: 18
+  hidden_size: 36
   use_negative: False
   activation: dice
   softmax_logits: False

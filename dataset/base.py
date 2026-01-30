@@ -42,8 +42,6 @@ class DienDataset:
         self.negative_prop = negative_prop
         self.negative_sample = negative_sample
 
-        self.random_idx = list(range(self.source.shape[0]))
-
     def __len__(self):
         return self.source.shape[0]
 
@@ -127,11 +125,10 @@ class DienDataset:
         return tuple(needed)
 
 class DienDatasetLoader:
-    def __init__(self, dataset: DienDataset, eval_ratio: float=0.1, shuffle: bool = True):
+    def __init__(self, dataset: DienDataset, shuffle: bool = True):
         self.dataset = dataset
         self.shuffle = shuffle
         self.num_samples = len(dataset)
-        self.train_eval_split = int(self.num_samples * (1 - eval_ratio))
         self.random_idx = list(range(self.num_samples))
         self.reset()
 
@@ -143,16 +140,9 @@ class DienDatasetLoader:
         output_signature = self.dataset.get_output_signature()
         return output_signature[1:], output_signature[0]
 
-    def train_call(self):
-        for i in range(self.train_eval_split):
-            idx = self.random_idx[i]
+    def __call__(self):
+        for idx in self.random_idx:
             yield self.dataset[idx][1:], self.dataset[idx][0]
-
-    def eval_call(self):
-        for i in range(self.train_eval_split, self.num_samples):
-            idx = self.random_idx[i]
-            yield self.dataset[idx][1:], self.dataset[idx][0]
-
 
 
 
