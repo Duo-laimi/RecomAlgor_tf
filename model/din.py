@@ -116,6 +116,7 @@ class Din(tf.keras.Model):
         # combined_item_embed = tf.nn.dropout(combined_item_embed, rate=0.2)
         combined_embed = tf.concat([user_embed, item_embed, combined_item_embed, item_embed * combined_item_embed], axis=-1)
         logits = self.mlp2(combined_embed) # B, 1
+        logits = tf.nn.sigmoid(logits)
         return logits
 
     def get_config(self):
