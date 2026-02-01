@@ -3,7 +3,7 @@ from typing import Dict
 
 import pandas as pd
 
-from .base import DienDataset, Item
+from dataset.dien import DienDataset, Item
 
 """
 -Amazon Book
