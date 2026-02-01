@@ -27,12 +27,17 @@ class Config:
         for k, v in self.model_config.items():
             print_func(f"{k:>15}: {v}")
 
-    def update_config(self, new_configs: Dict[str, Any], item_name=None):
-        if item_name in self.config:
-            self.model_config.update(new_configs) # debug
-            # self.config[item_name].update(new_configs)
-        else:
-            self.config.update(new_configs)
+    def update_config(self, new_configs: Dict[str, Any]):
+        for key, value in new_configs.items():
+            entry = {key: value}
+            if key in self.training_config:
+                self.training_config.update(entry)
+            elif key in self.data_config:
+                self.data_config.update(entry)
+            elif key in self.model_config:
+                self.model_config.update(entry)
+            else:
+                self.config.update(entry)
 
 if __name__ == "__main__":
     path = "../config/din_config.yaml"
