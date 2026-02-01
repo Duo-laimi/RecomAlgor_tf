@@ -5,6 +5,9 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
+from dataset.abstrct import BaseDataset, BaseDatasetLoader
+
+
 @dataclass
 class Item:
     unique_id: str
@@ -12,8 +15,7 @@ class Item:
     mapping_id: int
     category_id: int
 
-
-class DienDataset:
+class DienDataset(BaseDataset):
     def __init__(
             self,
             source: pd.DataFrame,
@@ -124,8 +126,8 @@ class DienDataset:
         # ["label", "uid", "mid", "cat", "mid_history", "cat_history", "positive_mask", "negative_mid_history", "negative_cat_history"]
         return tuple(needed)
 
-class DienDatasetLoader:
-    def __init__(self, dataset: DienDataset, shuffle: bool = True):
+class DienDatasetLoader(BaseDatasetLoader):
+    def __init__(self, dataset: BaseDataset, shuffle: bool = True):
         self.dataset = dataset
         self.shuffle = shuffle
         self.num_samples = len(dataset)
