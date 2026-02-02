@@ -1,4 +1,5 @@
-
+name: default
+abs_class: model.din.Din
 
 data_args:
  train:

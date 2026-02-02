@@ -39,6 +39,16 @@ class Config:
             else:
                 self.config.update(entry)
 
+    def __getitem__(self, item):
+        if item in self.training_config:
+            return self.training_config[item]
+        elif item in self.data_config:
+            return self.data_config[item]
+        elif item in self.model_config:
+            return self.model_config[item]
+        else:
+            return self.config[item]
+
 if __name__ == "__main__":
     path = "../config/din_config.yaml"
     config = Config(path)

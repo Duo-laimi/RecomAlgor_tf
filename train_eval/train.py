@@ -1,30 +1,59 @@
-import os.path
+import os
 import logging as log
-
-from parse_args import parse_args
-from utils.config import Config
-from utils.common import setup_logging
-from dataset.impl.amazon_book import load_amazon_book as load_dataset
-from dataset.dien import DienDatasetLoader
-from  model.din import Din
+from typing import Type
+from datetime import datetime
 
 import tensorflow as tf
+
+from dataset.dien import DienDatasetLoader
+from dataset.utils import load_dataset
+from main import set_all_seeds
+from model.din import Din
+from utils.config import Config
+
 from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.keras.metrics import binary_accuracy, AUC, Recall, Precision
-import random
-import numpy as np
 
 logger = log.getLogger(__name__)
 
-def set_all_seeds(seed=42):
-    os.environ['PYTHONHASHSEED'] = str(seed)
-    random.seed(seed)
-    np.random.seed(seed)
-    tf.random.set_seed(seed)
 
-def main(args):
-    setup_logging(args.log_config)
-    config = Config(args.config)
+def train(
+        model,
+        optimizer,
+        criterion,
+        metrics,
+        num_epochs,
+        train_dataset,
+        eval_dataset,
+        callbacks=None,
+        from_scratch=True,
+        ckpt_path=None,
+        export_path=None
+):
+    if os.path.exists(ckpt_path) and not from_scratch:
+        model = tf.keras.models.load_model(ckpt_path)
+        logger.info(f"Training based on existing weights: {ckpt_path}.")
+    else:
+        model.compile(
+            optimizer=optimizer,
+            loss=criterion,
+            metrics=metrics
+        )
+    model.fit(
+        train_dataset,
+        epochs=num_epochs,
+        validation_data=eval_dataset,
+        callbacks=callbacks
+    )
+    if os.path.exists(export_path):
+        model.export(export_path)
+        logger.info(f"Model exported to: {export_path}.")
+
+
+def train_from_config(
+        config: Config,
+        MODEL_CLASS: Type[tf.keras.Model] = Din
+):
     train_dataset = load_dataset(**config.data_config["train"])
     eval_dataset = load_dataset(**config.data_config["eval"])
     training_args = config.training_config
@@ -41,15 +70,8 @@ def main(args):
         _eval_loader,
         output_signature=_eval_loader.get_output_signature()
     ).batch(eval_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
-    model_args = {
-        "num_users": train_dataset.num_users,
-        "num_items": train_dataset.num_items,
-        "num_categories": train_dataset.num_categories
-    }
-    config.model_config.update(model_args)
-    print(config.model_config)
 
-    model = Din(**config.model_config)
+    model = MODEL_CLASS(**config.model_config)
     optimizer_args = training_args["optimizer_args"]
 
     save_path = config.training_config["save_path"]
@@ -71,7 +93,9 @@ def main(args):
                 AUC(name="auc")
             ]
         )
-    tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir="logs/din", histogram_freq=1, update_freq=10)
+    now = datetime.now()
+    date_time = now.strftime("%Y%m%d%H%M")
+    tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=f"logs/{MODEL_CLASS}/{date_time}", histogram_freq=1, update_freq=10)
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(ckpt_path, save_best_only=True)
     model.fit(
         train_dataset_tf,
@@ -83,7 +107,5 @@ def main(args):
     model.export(save_path)
 
 
+# 目标是直接生成所有配置下的实验结果，构建成表
 
-if __name__ == "__main__":
-    argv = parse_args()
-    main(argv)

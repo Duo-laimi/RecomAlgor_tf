@@ -26,6 +26,8 @@ def param_grid(**kwargs):
 
 def config_generator(init_config: Config, param_settings: List[Dict[str, Any]]):
     for new_config in param_settings:
+        name = f"{init_config['abs_class']}: {new_config}"
         current_config = copy.deepcopy(init_config)
+        new_config["name"] = name
         current_config.update_config(new_config)
         yield current_config

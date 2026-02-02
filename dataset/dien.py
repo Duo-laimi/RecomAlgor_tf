@@ -145,6 +145,7 @@ class DienDatasetLoader(BaseDatasetLoader):
     def __call__(self):
         for idx in self.random_idx:
             yield self.dataset[idx][1:], self.dataset[idx][0]
+        self.reset()
 
 
 
