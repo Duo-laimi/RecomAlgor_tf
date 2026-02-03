@@ -1,3 +1,4 @@
+import importlib
 import os
 import logging as log
 from typing import Type
@@ -51,8 +52,7 @@ def train(
 
 
 def train_from_config(
-        config: Config,
-        MODEL_CLASS: Type[tf.keras.Model] = Din
+        config: Config
 ):
     train_dataset = load_dataset(**config.data_config["train"])
     eval_dataset = load_dataset(**config.data_config["eval"])
@@ -71,11 +71,18 @@ def train_from_config(
         output_signature=_eval_loader.get_output_signature()
     ).batch(eval_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
 
+    model_class_path = config.training_config["model_class"]
+    parent_path, class_name = model_class_path.rsplit(".", 1)
+    parent_module = importlib.import_module(model_class_path)
+    MODEL_CLASS = getattr(parent_module, class_name)
     model = MODEL_CLASS(**config.model_config)
-    optimizer_args = training_args["optimizer_args"]
 
     save_path = config.training_config["save_path"]
     ckpt_path = config.training_config["ckpt_path"]
+
+    name = config["name"]
+    save_path = os.path.join(save_path, name)
+
     from_scratch = config.training_config["from_scratch"]
     if os.path.exists(ckpt_path) and not from_scratch:
         # model.build(input_shape=(None, model.embedding_dim))
@@ -83,19 +90,12 @@ def train_from_config(
         model = tf.keras.models.load_model(ckpt_path)
         logger.info(f"Training based on existing weights: {ckpt_path}.")
     else:
-        model.compile(
-            optimizer=tf.keras.optimizers.Adam(**optimizer_args),
-            loss=binary_crossentropy,
-            metrics=[
-                binary_accuracy,
-                Precision(name="precision"),
-                Recall(name="recall"),
-                AUC(name="auc")
-            ]
-        )
-    now = datetime.now()
-    date_time = now.strftime("%Y%m%d%H%M")
-    tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=f"logs/{MODEL_CLASS}/{date_time}", histogram_freq=1, update_freq=10)
+        opt = tf.keras.optimizers.get(training_args['optimizer'])
+        ls = tf.keras.losses.get(training_args['loss'])
+        met = [tf.keras.metrics.get(m) for m in training_args['metrics']]
+        model.compile(optimizer=opt, loss=ls, metrics=met)
+
+    tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=f"logs/{name}", histogram_freq=1, update_freq=10)
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(ckpt_path, save_best_only=True)
     model.fit(
         train_dataset_tf,

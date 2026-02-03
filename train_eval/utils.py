@@ -1,4 +1,5 @@
 import itertools
+import os
 from typing import List, Dict, Any
 
 from utils.config import Config
@@ -24,10 +25,22 @@ def param_grid(**kwargs):
 
     return grid
 
+def get_short_name(name):
+    items = name.split('_')
+    res = []
+    for item in items:
+        res.append(item[0])
+    return "".join(res)
+
 def config_generator(init_config: Config, param_settings: List[Dict[str, Any]]):
     for new_config in param_settings:
-        name = f"{init_config['abs_class']}: {new_config}"
         current_config = copy.deepcopy(init_config)
-        new_config["name"] = name
+        name = init_config['name']
+        suffix = [f"{get_short_name(key)}_{value}" for key, value in new_config.items()]
+        new_config["name"] = name + "_" + "".join(suffix)
+        # 修改save_path和ckpt_path
+        new_config["save_path"] = os.path.join(init_config["save_path"], name)
+        dirname, filename = os.path.split(init_config["ckpt_path"])
+        new_config["ckpt_path"] = os.path.join(dirname, name, filename)
         current_config.update_config(new_config)
         yield current_config

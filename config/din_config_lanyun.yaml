@@ -1,5 +1,5 @@
 name: default
-abs_class: model.din.Din
+model_class: model.din.Din
 
 data_args:
  train:
@@ -21,9 +21,10 @@ training_args:
   warmup_ratio: 0.1
   eval_ratio: 0.1
   pin_memory: False
-  optimizer: adam
   from_scratch: True
-  optimizer_args:
+  optimizer:
+   class_name: Adam
+   config:
     learning_rate: 0.001
     weight_decay: 0.01
   save_path: /root/lanyun-tmp/model/din/inference
