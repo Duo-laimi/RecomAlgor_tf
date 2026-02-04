@@ -17,6 +17,11 @@ class Config:
         self.print_config()
 
     def print_config(self, print_func=logger.info):
+        print_func("Common Args: ")
+        for k, v in self.config.items():
+            if k in ["training_args", "model_args", "data_args"]:
+                continue
+            print_func(f"{k:>15}: {v}")
         print_func("Data Args: ")
         for k, v in self.data_config.items():
             print_func(f"{k:>15}: {v}")

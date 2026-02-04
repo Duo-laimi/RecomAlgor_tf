@@ -15,18 +15,22 @@ training_args:
   seed: 42
   world_size: 1
   num_workers: 4
-  num_epochs: 5
+  num_epochs: 1
   train_batch_size: 64
   eval_batch_size: 128
   warmup_ratio: 0.1
   eval_ratio: 0.1
   pin_memory: False
   from_scratch: True
-  optimizer:
-   class_name: Adam
-   config:
-    learning_rate: 0.001
-    weight_decay: 0.01
+  optimizer: Adam
+  learning_rate: 0.001
+  weight_decay: 0.01
+  loss: binary_crossentropy
+  metrics:
+   - binary_accuracy
+   - Precision
+   - Recall
+   - AUC
   save_path: /root/lanyun-tmp/model/din/inference
   ckpt_path: /root/lanyun-tmp/model/din/checkpoints/best_model.keras
 

@@ -51,9 +51,7 @@ def train(
         logger.info(f"Model exported to: {export_path}.")
 
 
-def train_from_config(
-        config: Config
-):
+def train_from_config(config: Config):
     train_dataset = load_dataset(**config.data_config["train"])
     eval_dataset = load_dataset(**config.data_config["eval"])
     training_args = config.training_config
@@ -90,21 +88,31 @@ def train_from_config(
         model = tf.keras.models.load_model(ckpt_path)
         logger.info(f"Training based on existing weights: {ckpt_path}.")
     else:
-        opt = tf.keras.optimizers.get(training_args['optimizer'])
+        opt_name = training_args["optimizer"]
+        lr = training_args["learning_rate"]
+        weight_decay = training_args["weight_decay"]
+        opt = tf.keras.optimizers.get({"class_name": opt_name, "config": {"learning_rate": lr, "weight_decay": weight_decay}})
         ls = tf.keras.losses.get(training_args['loss'])
         met = [tf.keras.metrics.get(m) for m in training_args['metrics']]
         model.compile(optimizer=opt, loss=ls, metrics=met)
 
     tensorboard_cb = tf.keras.callbacks.TensorBoard(log_dir=f"logs/{name}", histogram_freq=1, update_freq=10)
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(ckpt_path, save_best_only=True)
-    model.fit(
+    history = model.fit(
         train_dataset_tf,
         epochs=training_args["num_epochs"],
         validation_data=eval_dataset_tf,
         callbacks=[tensorboard_cb, checkpoint_cb]
     )
+
+    val_metrics = {}
+    for name in history.history.keys():
+        if name.startswith('val_'):
+            val_metrics[name] = history.history[name][-1]
+
     # model.save(save_path)
     model.export(save_path)
+    return val_metrics
 
 
 # 目标是直接生成所有配置下的实验结果，构建成表
