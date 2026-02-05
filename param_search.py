@@ -5,10 +5,12 @@ from utils.common import setup_logging, read_yaml
 from utils.config import Config
 
 import pandas as pd
+import logging as log
 
 
 def main(args):
     setup_logging(args.log_config)
+    logger = log.get_logger(__name__)
     init_config = Config(args.config)
     param_grid_config = read_yaml(args.param_grid)
     param_grid = get_param_grid(**param_grid_config)
@@ -17,9 +19,12 @@ def main(args):
     val_metrics_all = []
     for cfg in cfg_generator:
         val_metrics = train_from_config(cfg)
+        val_metrics["name"] = cfg["name"]
         val_metrics_all.append(val_metrics)
 
-    df = pd.DataFrame.from_dict(val_metrics_all)
+    df = pd.DataFrame(val_metrics_all)
+    logger.info(df)
+    df.to_csv("val_metrics_all.csv")
 
 
 
