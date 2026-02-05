@@ -17,6 +17,7 @@ def main(args):
 
     val_metrics_all = []
     for cfg in cfg_generator:
+        cfg.print_config()
         val_metrics = train_from_config(cfg)
         val_metrics["name"] = cfg["name"]
         val_metrics_all.append(val_metrics)
