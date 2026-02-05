@@ -69,7 +69,7 @@ def train_from_config(config: Config):
         output_signature=_eval_loader.get_output_signature()
     ).batch(eval_batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
 
-    model_class_path = config.training_config["model_class"]
+    model_class_path = config["model_class"]
     parent_path, class_name = model_class_path.rsplit(".", 1)
     parent_module = importlib.import_module(model_class_path)
     MODEL_CLASS = getattr(parent_module, class_name)
