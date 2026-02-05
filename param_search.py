@@ -7,10 +7,9 @@ from utils.config import Config
 import pandas as pd
 import logging as log
 
-
 def main(args):
     setup_logging(args.log_config)
-    logger = log.get_logger(__name__)
+    logger = log.getLogger(__name__)
     init_config = Config(args.config)
     param_grid_config = read_yaml(args.param_grid)
     param_grid = get_param_grid(**param_grid_config)
