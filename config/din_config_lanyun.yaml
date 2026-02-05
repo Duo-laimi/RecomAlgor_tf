@@ -2,12 +2,12 @@ name: default
 model_class: model.din.Din
 
 data_args:
- train_limit: 100000
+ train_limit: 10000
  train:
   meta: /root/lanyun-tmp/dataset/amazon_book/item-info
   codebooks: /root/lanyun-tmp/dataset/amazon_book/
   data: /root/lanyun-tmp/dataset/amazon_book/local_train_splitByUser
- eval_limit: 10000
+ eval_limit: 1000
  eval:
   meta: /root/lanyun-tmp/dataset/amazon_book/item-info
   codebooks: /root/lanyun-tmp/dataset/amazon_book/

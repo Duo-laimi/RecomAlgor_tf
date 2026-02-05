@@ -91,8 +91,7 @@ def train_from_config(config: Config):
         lr = config["learning_rate"]
         weight_decay = config["weight_decay"]
         opt = tf.keras.optimizers.get({"class_name": opt_name, "config": {"learning_rate": lr, "weight_decay": weight_decay}})
-        # loss = tf.keras.losses.get(config['loss'])
-        loss = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+        loss = tf.keras.losses.get({"class_name": config['loss'], "config": {"from_logits": True}})
         met = [tf.keras.metrics.get(m) for m in config['metrics']]
         model.compile(optimizer=opt, loss=loss, metrics=met)
 

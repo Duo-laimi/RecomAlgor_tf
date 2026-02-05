@@ -6,6 +6,8 @@ import pandas as pd
 import tensorflow as tf
 
 from dataset.abstrct import BaseDataset, BaseDatasetLoader
+import logging as log
+logger = log.getLogger(__name__)
 
 
 @dataclass
@@ -43,6 +45,7 @@ class DienDataset(BaseDataset):
 
         self.negative_prop = negative_prop
         self.negative_sample = negative_sample
+        logger.info(f"Total data count: {len(self)}")
 
     def __len__(self):
         return self.source.shape[0]
