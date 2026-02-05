@@ -70,7 +70,7 @@ def train_from_config(config: Config):
 
     model_class_path = config["model_class"]
     parent_path, class_name = model_class_path.rsplit(".", 1)
-    parent_module = importlib.import_module(model_class_path)
+    parent_module = importlib.import_module(parent_path)
     MODEL_CLASS = getattr(parent_module, class_name)
     model = MODEL_CLASS(**config.model_config)
 
