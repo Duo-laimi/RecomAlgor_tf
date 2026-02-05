@@ -37,7 +37,8 @@ def get_config_generator(init_config: Config, param_settings: List[Dict[str, Any
         current_config = copy.deepcopy(init_config)
         name = init_config['name']
         suffix = [f"{get_short_name(key)}_{value}" for key, value in new_config.items()]
-        new_config["name"] = name + "_" + "_".join(suffix)
+        name = name + "_" + "_".join(suffix)
+        new_config["name"] = name
         # 修改save_path和ckpt_path
         new_config["save_path"] = os.path.join(init_config["save_path"], name)
         dirname, filename = os.path.split(init_config["ckpt_path"])

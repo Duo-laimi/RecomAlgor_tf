@@ -2,10 +2,12 @@ name: default
 model_class: model.din.Din
 
 data_args:
+ train_limit: 100000
  train:
   meta: /root/lanyun-tmp/dataset/amazon_book/item-info
   codebooks: /root/lanyun-tmp/dataset/amazon_book/
   data: /root/lanyun-tmp/dataset/amazon_book/local_train_splitByUser
+ eval_limit: 10000
  eval:
   meta: /root/lanyun-tmp/dataset/amazon_book/item-info
   codebooks: /root/lanyun-tmp/dataset/amazon_book/
@@ -36,9 +38,9 @@ training_args:
 
 
 model_args:
-  num_users: -1
-  num_items: -1
-  num_categories: -1
+  num_users: 543060
+  num_items: 367983
+  num_categories: 1601
   embedding_dim: 18
   hidden_size: 36
   use_negative: False

@@ -58,8 +58,8 @@ def train_from_config(config: Config):
     set_all_seeds(training_args["seed"])
     train_batch_size = training_args["train_batch_size"]
     eval_batch_size = training_args["eval_batch_size"]
-    _train_loader = DienDatasetLoader(train_dataset, True)
-    _eval_loader = DienDatasetLoader(eval_dataset, True)
+    _train_loader = DienDatasetLoader(train_dataset, True, config.data_config["train_limit"])
+    _eval_loader = DienDatasetLoader(eval_dataset, True, config.data_config["eval_limit"])
     train_dataset_tf = tf.data.Dataset.from_generator(
         _train_loader,
         output_signature=_train_loader.get_output_signature()

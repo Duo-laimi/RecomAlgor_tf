@@ -127,16 +127,19 @@ class DienDataset(BaseDataset):
         return tuple(needed)
 
 class DienDatasetLoader(BaseDatasetLoader):
-    def __init__(self, dataset: BaseDataset, shuffle: bool = True):
+    def __init__(self, dataset: BaseDataset, shuffle: bool = True, limit: int = -1):
         self.dataset = dataset
         self.shuffle = shuffle
         self.num_samples = len(dataset)
         self.random_idx = list(range(self.num_samples))
+        self.limit = limit
         self.reset()
 
     def reset(self):
         if self.shuffle:
             self.random_idx = np.random.permutation(self.num_samples).tolist()
+            if self.limit > 0:
+                self.random_idx = self.random_idx[:self.limit]
 
     def get_output_signature(self):
         output_signature = self.dataset.get_output_signature()
