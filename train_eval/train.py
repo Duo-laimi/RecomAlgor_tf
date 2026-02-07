@@ -1,55 +1,16 @@
 import importlib
-import os
 import logging as log
-from typing import Type
-from datetime import datetime
+import os
 
 import tensorflow as tf
+from tensorflow.keras.losses import binary_crossentropy
 
 from dataset.dien import DienDatasetLoader
 from dataset.utils import load_dataset
-from main import set_all_seeds
-from model.din import Din
 from utils.config import Config
-
-from tensorflow.keras.losses import binary_crossentropy
-from tensorflow.keras.metrics import binary_accuracy, AUC, Recall, Precision
+from .utils import set_all_seeds
 
 logger = log.getLogger(__name__)
-
-
-def train(
-        model,
-        optimizer,
-        criterion,
-        metrics,
-        num_epochs,
-        train_dataset,
-        eval_dataset,
-        callbacks=None,
-        from_scratch=True,
-        ckpt_path=None,
-        export_path=None
-):
-    if os.path.exists(ckpt_path) and not from_scratch:
-        model = tf.keras.models.load_model(ckpt_path)
-        logger.info(f"Training based on existing weights: {ckpt_path}.")
-    else:
-        model.compile(
-            optimizer=optimizer,
-            loss=criterion,
-            metrics=metrics
-        )
-    model.fit(
-        train_dataset,
-        epochs=num_epochs,
-        validation_data=eval_dataset,
-        callbacks=callbacks
-    )
-    if os.path.exists(export_path):
-        model.export(export_path)
-        logger.info(f"Model exported to: {export_path}.")
-
 
 def train_from_config(config: Config):
     train_dataset = load_dataset(**config.data_config["train"])

@@ -1,9 +1,19 @@
 import itertools
 import os
+import random
+import numpy as np
+import tensorflow as tf
 from typing import List, Dict, Any
 
 from utils.config import Config
 import copy
+
+
+def set_all_seeds(seed=42):
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+    tf.random.set_seed(seed)
 
 
 def get_param_grid(**kwargs):
