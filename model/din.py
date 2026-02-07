@@ -35,7 +35,9 @@ class Din(tf.keras.Model):
 
         ACT_CLASS = ACT_FUNC[activation]
 
+        # TODO: 基于配置构建mlp
         self.mlp1 = tf.keras.Sequential([
+            tf.keras.layers.BatchNormalization(),
             tf.keras.layers.Dense(hidden_size),
             ACT_CLASS(),
             tf.keras.layers.Dense(hidden_size // 2),
@@ -113,7 +115,7 @@ class Din(tf.keras.Model):
         item_history_embed = item_history_embed + category_history_embed
 
         combined_item_embed = self.din_attention(item_embed, item_history_embed, sequence_mask)
-        combined_item_embed = tf.nn.dropout(combined_item_embed, rate=0.2)
+        # combined_item_embed = tf.nn.dropout(combined_item_embed, rate=0.2)
         combined_embed = tf.concat([user_embed, item_embed, combined_item_embed, item_embed * combined_item_embed], axis=-1)
         logits = self.mlp2(combined_embed) # B, 1
         logits = tf.nn.sigmoid(logits)

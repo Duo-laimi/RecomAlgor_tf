@@ -106,11 +106,15 @@ def train_from_config(config: Config):
 
     val_metrics = {}
     for name in history.history.keys():
+        # name_split = name.split("_")
+        # name = "_".join(name_split[:2])
         if name.startswith('val_'):
             val_metrics[name] = history.history[name][-1]
 
     # model.save(save_path)
     model.export(save_path)
+    # 清除后端会话
+    tf.keras.backend.clear_session()
     return val_metrics
 
 
