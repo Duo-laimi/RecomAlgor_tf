@@ -2,6 +2,7 @@ import os.path
 import logging as log
 
 from parse_args import parse_args
+from train_eval.utils import set_all_seeds
 from utils.config import Config
 from utils.common import setup_logging
 from dataset.impl.amazon_book import load_amazon_book as load_dataset
@@ -15,12 +16,6 @@ import random
 import numpy as np
 
 logger = log.getLogger(__name__)
-
-def set_all_seeds(seed=42):
-    os.environ['PYTHONHASHSEED'] = str(seed)
-    random.seed(seed)
-    np.random.seed(seed)
-    tf.random.set_seed(seed)
 
 def main(args):
     setup_logging(args.log_config)
