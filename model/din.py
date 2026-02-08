@@ -37,19 +37,21 @@ class Din(tf.keras.Model):
 
         # TODO: 基于配置构建mlp
         self.mlp1 = tf.keras.Sequential([
-            tf.keras.layers.BatchNormalization(),
             tf.keras.layers.Dense(hidden_size),
+            tf.keras.layers.BatchNormalization(),
             ACT_CLASS(),
             tf.keras.layers.Dense(hidden_size // 2),
+            tf.keras.layers.BatchNormalization(),
             ACT_CLASS(),
             tf.keras.layers.Dense(1, )
         ])
 
         self.mlp2 = tf.keras.Sequential([
-            tf.keras.layers.BatchNormalization(),
             tf.keras.layers.Dense(hidden_size),
+            tf.keras.layers.BatchNormalization(),
             ACT_CLASS(),
             tf.keras.layers.Dense(hidden_size // 2),
+            tf.keras.layers.BatchNormalization(),
             ACT_CLASS(),
             tf.keras.layers.Dense(1, )
         ])
