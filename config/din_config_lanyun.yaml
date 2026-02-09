@@ -15,14 +15,8 @@ data_args:
 
 training_args:
   seed: 42
-  world_size: 1
-  num_workers: 4
-  num_epochs: 1
-  train_batch_size: 64
-  eval_batch_size: 128
-  warmup_ratio: 0.1
-  eval_ratio: 0.1
-  pin_memory: False
+  train_batch_size: 8
+  eval_batch_size: 16
   from_scratch: True
   optimizer: Adam
   learning_rate: 0.001
@@ -33,6 +27,9 @@ training_args:
    - Precision
    - Recall
    - AUC
+  num_epochs: 1
+  warmup_ratio: 0.1
+  train_steps_per_epoch: 12500
   save_path: /root/lanyun-tmp/model/din/inference
   ckpt_path: /root/lanyun-tmp/model/din/checkpoints/best_model.keras
 
@@ -41,7 +38,7 @@ model_args:
   num_users: 543060
   num_items: 367983
   num_categories: 1601
-  embedding_dim: 18
+  embedding_dim: 32
   hidden_size: 36
   use_negative: False
   activation: dice

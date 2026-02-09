@@ -8,6 +8,8 @@ from tensorflow.keras.losses import binary_crossentropy
 from dataset.dien import DienDatasetLoader
 from dataset.utils import load_dataset
 from utils.config import Config
+
+from model.scheduler import CosineWarmupSchedule
 from .utils import set_all_seeds
 
 logger = log.getLogger(__name__)
@@ -51,7 +53,13 @@ def train_from_config(config: Config):
         opt_name = config["optimizer"]
         lr = config["learning_rate"]
         weight_decay = config["weight_decay"]
-        opt = tf.keras.optimizers.get({"class_name": opt_name, "config": {"learning_rate": lr, "weight_decay": weight_decay}})
+        warmup_ratio = config["warmup_ratio"]
+        train_steps_per_epoch = config["train_steps_per_epoch"]
+        num_epochs = config["num_epochs"]
+        total_steps = train_steps_per_epoch * num_epochs
+        warmup_steps = int(warmup_ratio * total_steps)
+        scheduler = CosineWarmupSchedule(lr, warmup_steps, total_steps)
+        opt = tf.keras.optimizers.get({"class_name": opt_name, "config": {"learning_rate": scheduler, "weight_decay": weight_decay}})
         loss = tf.keras.losses.get({"class_name": config['loss'], "config": {"from_logits": False}})
         met = [tf.keras.metrics.get(m) for m in config['metrics']]
         model.compile(optimizer=opt, loss=loss, metrics=met)
