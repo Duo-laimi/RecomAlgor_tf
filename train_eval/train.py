@@ -41,7 +41,7 @@ def train_from_config(config: Config):
     ckpt_path = config["ckpt_path"]
 
     name = config["name"]
-    save_path = os.path.join(save_path, name)
+    # save_path = os.path.join(save_path, name)
 
     from_scratch = config["from_scratch"]
     if os.path.exists(ckpt_path) and not from_scratch:
