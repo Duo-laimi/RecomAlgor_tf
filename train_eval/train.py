@@ -9,7 +9,7 @@ from dataset.dien import DienDatasetLoader
 from dataset.utils import load_dataset
 from utils.config import Config
 
-from model.scheduler import CosineWarmupSchedule
+from .scheduler import CosineWarmupSchedule
 from .utils import set_all_seeds
 
 logger = log.getLogger(__name__)
